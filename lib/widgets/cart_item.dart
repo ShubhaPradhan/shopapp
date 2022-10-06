@@ -60,7 +60,9 @@ class CartItem extends StatelessWidget {
         );
       },
       onDismissed: (direction) {
-        Provider.of<Cart>(context, listen: false).removeItem(productId);
+        final cartId =
+            Provider.of<Cart>(context, listen: false).getCartId(productId);
+        Provider.of<Cart>(context, listen: false).removeItem(cartId, productId);
       },
       child: Card(
         margin: EdgeInsets.symmetric(

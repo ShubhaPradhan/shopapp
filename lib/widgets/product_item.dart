@@ -65,7 +65,8 @@ class _ProductItemState extends State<ProductItem> {
                   action: SnackBarAction(
                     label: 'UNDO',
                     onPressed: () {
-                      cart.removeSingleItem(product.id);
+                      cart.removeSingleItem(
+                          cart.getCartId(product.id), product.id);
                     },
                   ),
                 ),

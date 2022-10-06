@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
 
+import '../models/http_exception.dart';
+
 class CartItem {
   final String cartId;
   final String id;
@@ -41,7 +43,6 @@ class Cart with ChangeNotifier {
   String getCartId(String productId) {
     String cartId;
     _items.entries.forEach((element) {
-      print("shubha");
       if (element.value.id == productId) {
         cartId = element.value.cartId;
       }
@@ -154,16 +155,35 @@ class Cart with ChangeNotifier {
     notifyListeners();
   }
 
-  void removeItem(String productId) {
+  Future<void> removeItem(String cartId, String productId) async {
+    final url = Uri.parse(
+        'https://shopapp-c7c23-default-rtdb.asia-southeast1.firebasedatabase.app/carts/$cartId.json');
+    var existingCartItem = _items[productId];
     _items.remove(productId);
     notifyListeners();
+    final response = await http.delete(url);
+    if (response.statusCode >= 400) {
+      _items.putIfAbsent(productId, () => existingCartItem);
+      notifyListeners();
+      throw HttpException('Could not delete product.');
+    }
+    existingCartItem = null;
   }
 
-  void removeSingleItem(String productId) {
+  Future<void> removeSingleItem(String cartId, String productId) async {
+    final url = Uri.parse(
+        'https://shopapp-c7c23-default-rtdb.asia-southeast1.firebasedatabase.app/carts/$cartId.json');
+
     if (!_items.containsKey(productId)) {
       return;
     }
     if (_items[productId].quantity > 1) {
+      await http.patch(
+        url,
+        body: json.encode({
+          'quantity': _items[productId].quantity - 1,
+        }),
+      );
       _items.update(
         productId,
         (existingCartItem) => CartItem(
@@ -175,13 +195,17 @@ class Cart with ChangeNotifier {
         ),
       );
     } else {
+      await http.delete(url);
       _items.remove(productId);
     }
     notifyListeners();
   }
 
-  void clear() {
+  Future<void> clear() async {
+    final url = Uri.parse(
+        'https://shopapp-c7c23-default-rtdb.asia-southeast1.firebasedatabase.app/carts.json');
     _items = {};
+    await http.delete(url);
     notifyListeners();
   }
 }
