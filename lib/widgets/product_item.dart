@@ -5,17 +5,13 @@ import 'package:provider/provider.dart';
 
 import '../providers/product.dart';
 
-class ProductItem extends StatelessWidget {
+class ProductItem extends StatefulWidget {
+  @override
+  State<ProductItem> createState() => _ProductItemState();
+}
+
+class _ProductItemState extends State<ProductItem> {
   // final String id;
-  // final String title;
-  // final String imageUrl;
-
-  // ProductItem(
-  //   this.id,
-  //   this.title,
-  //   this.imageUrl,
-  // );
-
   @override
   Widget build(BuildContext context) {
     final product = Provider.of<Product>(context, listen: false);
@@ -56,7 +52,8 @@ class ProductItem extends StatelessWidget {
           trailing: IconButton(
             icon: Icon(Icons.shopping_cart),
             onPressed: () async {
-              cart.addItem(cart.getCartId(product.id), product.id,
+              await cart.fetchAndSetCart();
+              await cart.addItem(cart.getCartId(product.id), product.id,
                   product.price, product.title);
               ScaffoldMessenger.of(context).hideCurrentSnackBar();
               ScaffoldMessenger.of(context).showSnackBar(

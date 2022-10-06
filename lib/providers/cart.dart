@@ -71,6 +71,7 @@ class Cart with ChangeNotifier {
                 ));
       });
       _items = loadedCarts;
+      // notifyListeners(); This is not rendering the cartItems (don't know why)
     } catch (error) {
       throw error;
     }
@@ -139,12 +140,12 @@ class Cart with ChangeNotifier {
     notifyListeners();
   }
 
-  void addItem(
+  Future<void> addItem(
     String cartID,
     String productId,
     double price,
     String title,
-  ) {
+  ) async {
     if (_items.containsKey(productId)) {
       updateCartItem(cartID, productId, price, title);
     } else {
