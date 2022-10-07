@@ -24,6 +24,10 @@ class CartItem {
 class Cart with ChangeNotifier {
   Map<String, CartItem> _items = {};
 
+  final String authToken;
+
+  Cart(this.authToken, this._items);
+
   Map<String, CartItem> get items {
     return {..._items};
   }
@@ -52,7 +56,7 @@ class Cart with ChangeNotifier {
 
   Future<void> fetchAndSetCart() async {
     final url = Uri.parse(
-        'https://shopapp-c7c23-default-rtdb.asia-southeast1.firebasedatabase.app/carts.json');
+        'https://shopapp-c7c23-default-rtdb.asia-southeast1.firebasedatabase.app/carts.json?auth=$authToken');
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
@@ -84,7 +88,7 @@ class Cart with ChangeNotifier {
     String title,
   ) async {
     final url = Uri.parse(
-        'https://shopapp-c7c23-default-rtdb.asia-southeast1.firebasedatabase.app/carts.json');
+        'https://shopapp-c7c23-default-rtdb.asia-southeast1.firebasedatabase.app/carts.json?auth=$authToken');
     try {
       final response = await http.post(
         url,
@@ -118,7 +122,7 @@ class Cart with ChangeNotifier {
     String title,
   ) async {
     final url = Uri.parse(
-        'https://shopapp-c7c23-default-rtdb.asia-southeast1.firebasedatabase.app/carts/$cartId.json');
+        'https://shopapp-c7c23-default-rtdb.asia-southeast1.firebasedatabase.app/carts/$cartId.json?auth=$authToken');
     await http.patch(
       url,
       body: json.encode({
@@ -157,7 +161,7 @@ class Cart with ChangeNotifier {
 
   Future<void> removeItem(String cartId, String productId) async {
     final url = Uri.parse(
-        'https://shopapp-c7c23-default-rtdb.asia-southeast1.firebasedatabase.app/carts/$cartId.json');
+        'https://shopapp-c7c23-default-rtdb.asia-southeast1.firebasedatabase.app/carts/$cartId.json?auth=$authToken');
     var existingCartItem = _items[productId];
     _items.remove(productId);
     notifyListeners();
@@ -172,7 +176,7 @@ class Cart with ChangeNotifier {
 
   Future<void> removeSingleItem(String cartId, String productId) async {
     final url = Uri.parse(
-        'https://shopapp-c7c23-default-rtdb.asia-southeast1.firebasedatabase.app/carts/$cartId.json');
+        'https://shopapp-c7c23-default-rtdb.asia-southeast1.firebasedatabase.app/carts/$cartId.json?auth=$authToken');
 
     if (!_items.containsKey(productId)) {
       return;
@@ -203,7 +207,7 @@ class Cart with ChangeNotifier {
 
   Future<void> clear() async {
     final url = Uri.parse(
-        'https://shopapp-c7c23-default-rtdb.asia-southeast1.firebasedatabase.app/carts.json');
+        'https://shopapp-c7c23-default-rtdb.asia-southeast1.firebasedatabase.app/carts.json?auth=$authToken');
     _items = {};
     await http.delete(url);
     notifyListeners();

@@ -59,10 +59,11 @@ class CartItem extends StatelessWidget {
           ),
         );
       },
-      onDismissed: (direction) {
+      onDismissed: (direction) async {
         final cartId =
             Provider.of<Cart>(context, listen: false).getCartId(productId);
-        Provider.of<Cart>(context, listen: false).removeItem(cartId, productId);
+        await Provider.of<Cart>(context, listen: false)
+            .removeItem(cartId, productId);
       },
       child: Card(
         margin: EdgeInsets.symmetric(
